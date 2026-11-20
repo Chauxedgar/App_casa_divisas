@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'top_up_view.dart';
+import './widgets/sell_modal.dart';
+import './widgets/buy_modal.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -148,7 +151,13 @@ class HomeView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => const BuyModal(),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: const Color(0xFF0052FF),
@@ -167,7 +176,14 @@ class HomeView extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => const SellModal(),
+                                );
+                                },
+
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.white, width: 1.5),
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -233,7 +249,6 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  // Componente reutilizable para cada divisa
   Widget _buildCurrencyTile({
     required String iconSymbol,
     required String pair,

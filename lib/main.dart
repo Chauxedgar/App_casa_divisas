@@ -1,6 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'firebase_options.dart';
+import 'presentation/views/login_view.dart';
 import 'presentation/views/home_view.dart';
-void main() {
+import 'presentation/views/ai_advisor_view.dart';
+import 'presentation/views/analytics_view.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. Carga segura de variables de entorno
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    // Manejo silencioso si el .env no carga
+  }
+
+  // 2. Inicializar Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+  );
+
+  // 3. Inicializar Firebase
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Manejo en caso de re-inicialización en web
+  }
+
+  // 4. Única llamada para arrancar la aplicación
   runApp(const CasaDivisasApp());
 }
 
@@ -10,22 +43,19 @@ class CasaDivisasApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Casa de Divisas & IA',
+      title: 'Casa de Divisas & Finanzas IA',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0052FF),
-          background: const Color(0xFFF8F9FA),
         ),
-        fontFamily: 'Roboto', // Fuente estándar limpia
       ),
-      home: const MainContainerScreen(),
+      home: const LoginView(),
     );
   }
 }
 
-// Contenedor principal con la barra de navegación inferior (BottomNavigationBar)
 class MainContainerScreen extends StatefulWidget {
   const MainContainerScreen({Key? key}) : super(key: key);
 
@@ -36,11 +66,10 @@ class MainContainerScreen extends StatefulWidget {
 class _MainContainerScreenState extends State<MainContainerScreen> {
   int _currentIndex = 0;
 
-  // Lista temporal de pantallas principales (las iremos conectando una a una)
   final List<Widget> _screens = [
-    const Center(child: Text("Pantalla Home (Dashboard)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-    const Center(child: Text("Pantalla AI Advisor (IA)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-    const Center(child: Text("Pantalla Analytics / About Us", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+    const HomeView(),
+    const AiAdvisorView(),
+    const AnalyticsView(),
   ];
 
   @override
